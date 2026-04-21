@@ -70,7 +70,7 @@ This segment includes procurement managers at private enterprises, EPC (Engineer
 
 ### 1.3 High-Level Architecture
 
-The locked architectural model is a **Hub-and-Spoke Sub-domain Architecture** delivered from a **single Greenfield monorepo**. The hub operates on the root domain and functions as the corporate trust center: it hosts the company profile, certifications, cross-sector portfolio, and routing CTAs that direct users to the appropriate product spoke. Each spoke is a dedicated sub-domain (e.g., `pju.dbsn.co.id`, `solar.dbsn.co.id`, `lightning.dbsn.co.id`) hosting product-cluster content, product pages, and the segmented RFQ entry point.
+The locked architectural model is a **Hub-and-Spoke Sub-domain Architecture** delivered from a **single Greenfield monorepo**. The hub operates on the root domain and functions as the corporate trust center: it hosts the company profile, certifications, cross-sector portfolio, and routing CTAs that direct users to the appropriate product spoke. Each spoke is a dedicated sub-domain (e.g., `pju.sentradaya.com`, `solarcell.sentradaya.com`, `alatpetir.sentradaya.com`, `baterai.sentradaya.com`) hosting product-cluster content, product pages, and the segmented RFQ entry point.
 
 All spokes share a single codebase, a shared design system (Tailwind CSS + Radix UI), and a unified data pipeline (Sanity CMS + PlanetScale). There are no divergent code forks between spokes — all differentiation is data-driven via Sanity schemas.
 
@@ -78,12 +78,12 @@ All spokes share a single codebase, a shared design system (Tailwind CSS + Radix
 
 ```mermaid
 graph TD
-    Root["🏢 dbsn.co.id (Hub)\nCorporate Trust Center\nCertifications · Portfolio · Routing"]
+    Root["🏢 sentradaya.com (Hub)\nCorporate Trust Center\nCertifications · Portfolio · Routing"]
 
-    Root -->|"Sub-domain routing"| S1["🌐 pju.dbsn.co.id\nPJU / Street Lighting\nSpoke"]
-    Root -->|"Sub-domain routing"| S2["🌐 solarcell.dbsn.co.id\nSolar Cell\nSpoke"]
-    Root -->|"Sub-domain routing"| S3["🌐 alatpetir.dbsn.co.id\nLightning Protection\nSpoke"]
-    Root -->|"Sub-domain routing"| SN["🌐 baterai.dbsn.co.id\nAdditional Spokes\n(extensible)"]
+    Root -->|"Sub-domain routing"| S1["🌐 pju.sentradaya.com\nPJU / Street Lighting\nSpoke"]
+    Root -->|"Sub-domain routing"| S2["🌐 solarcell.sentradaya.com\nSolar Cell\nSpoke"]
+    Root -->|"Sub-domain routing"| S3["🌐 alatpetir.sentradaya.com\nLightning Protection\nSpoke"]
+    Root -->|"Sub-domain routing"| SN["🌐 baterai.sentradaya.com\nAdditional Spokes\n(extensible)"]
 
     subgraph Monorepo ["📦 Single Turborepo Monorepo"]
         direction TB
@@ -148,11 +148,11 @@ The government buyer arrives with a compliance-first mindset. They must verify l
 ```mermaid
 flowchart TD
     A(["👤 Government Procurement Officer\n(PPK / Pengadaan / BUMN)"])
-    A --> B["Landing: Hub Root Domain\ndbsn.co.id"]
+    A --> B["Landing: Hub Root Domain sentradaya.com"]
     B --> C{"Intent Detection:\nNavigation Choice"}
     C -->|"Certifications / Compliance"| D["📄 Certifications Hub\nSNI · TKDN · LKPP Docs"]
     C -->|"Portfolio / References"| E["🏗️ Project Portfolio\nFiltered by Sector / Type"]
-    C -->|"Product Info"| F["🌐 Navigate to Relevant Spoke\ne.g. pju.dbsn.co.id"]
+    C -->|"Product Info"| F["🌐 Navigate to Relevant Spoke\ne.g. pju.sentradaya.com"]
     D --> G["Download Document\n(GA4: file_download event)"]
     E --> H["View Project Reference\nLinked to Relevant Spoke"]
     F --> I["Spoke: Product Detail Page\nSpecs · Docs · CTA"]
@@ -179,9 +179,9 @@ The private sector buyer arrives with a product-research or spec-validation inte
 flowchart TD
     A(["👤 B2B Private Buyer\n(Procurement Mgr / EPC Engineer / Facility Mgr)"])
     A --> B{"Entry Point"}
-    B -->|"Direct / Campaign"| C["Hub: dbsn.co.id\nCompany Overview + Spoke CTAs"]
+    B -->|"Direct / Campaign"| C["Hub: sentradaya.com\nCompany Overview + Spoke CTAs"]
     B -->|"SEO / Organic"| D["Spoke Landing Page\n(direct to product cluster)"]
-    C --> E["🌐 Navigate to Product Spoke\ne.g. solar.dbsn.co.id"]
+    C --> E["🌐 Navigate to Product Spoke\ne.g. solarcell.sentradaya.com"]
     D --> E
     E --> F["Product Catalogue / Category Page\nSpecs · Filters · Comparison"]
     F --> G["📄 Product Detail Page\nSpec sheet · Datasheet · CTA"]
