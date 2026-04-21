@@ -1,4 +1,4 @@
-# PRD: DBSN Unified Digital Ecosystem
+# PRD: DBSN Centralized Digital Ecosystem
 
 **Author:** Product + Engineering (AI-assisted)
 **Date:** 2026-04-20
@@ -81,9 +81,9 @@ graph TD
     Root["🏢 dbsn.co.id (Hub)\nCorporate Trust Center\nCertifications · Portfolio · Routing"]
 
     Root -->|"Sub-domain routing"| S1["🌐 pju.dbsn.co.id\nPJU / Street Lighting\nSpoke"]
-    Root -->|"Sub-domain routing"| S2["🌐 solar.dbsn.co.id\nSolar Cell\nSpoke"]
-    Root -->|"Sub-domain routing"| S3["🌐 lightning.dbsn.co.id\nLightning Protection\nSpoke"]
-    Root -->|"Sub-domain routing"| SN["🌐 [future].dbsn.co.id\nAdditional Spokes\n(extensible)"]
+    Root -->|"Sub-domain routing"| S2["🌐 solarcell.dbsn.co.id\nSolar Cell\nSpoke"]
+    Root -->|"Sub-domain routing"| S3["🌐 alatpetir.dbsn.co.id\nLightning Protection\nSpoke"]
+    Root -->|"Sub-domain routing"| SN["🌐 baterai.dbsn.co.id\nAdditional Spokes\n(extensible)"]
 
     subgraph Monorepo ["📦 Single Turborepo Monorepo"]
         direction TB
