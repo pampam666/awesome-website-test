@@ -1,9 +1,9 @@
 # PRD: DBSN Centralized Digital Ecosystem
 
-**Author:** Pramono & Sani
-**Date:** 2026-04-20
+**Author:** Pramono
+**Date:** 2026-04-21
 **Status:** Draft (Discovery Complete)
-**Version:** 2.0
+**Version:** 3.0
 **Taskmaster Optimized:** Yes
 
 ---
@@ -48,6 +48,8 @@ DBSN's digital presence is currently fragmented across three independently opera
 
 **RFQ Drop-Off.** The dominant conversion path is WhatsApp-only. There is no structured, segmented RFQ form with field-level capture for product category, project scope, procurement timeline, or buyer segment. This limits DBSN's ability to qualify inbound intent and creates invisible drop-off with no recovery mechanism.
 
+**Post-RFQ Visibility Gap.** After successful inquiry submission, clients currently have no secure self-service surface to monitor project or order progression. This creates repeated manual status inquiries, increases operational load on sales/admin teams, and weakens the trust signal for enterprise procurement journeys that expect transparent status tracking.
+
 **Operational Overhead.** Content, lead management, and analytics are siloed per domain. There is no unified dashboard, no cross-domain source attribution, and no single operational surface for the sales team to work from.
 
 **Why Solve This Now.** DBSN has outgrown the multi-site model. SEO migration risk increases non-linearly if not addressed as a structured initiative. Competition in B2B digital channels for renewable and electrical infrastructure is intensifying, and an internal strategic directive has explicitly prioritized trust signal architecture and conversion infrastructure as the next growth unlock.
@@ -60,19 +62,21 @@ DBSN's digital platform serves two distinct buyer segments, each with materially
 
 **Segment A — B2G: Government Procurement Officers**
 
-This segment includes PPK (Pejabat Pembuat Komitmen), Pengadaan staff, and BUMN procurement officers. These users are process-bound: they must validate that DBSN meets regulatory compliance requirements (SNI, TKDN, LKPP registration) before any engagement can proceed. Their primary journey is a trust-verification loop: they arrive looking for credentials, certifications, and structured references. The RFQ they submit is a formal inquiry, not a casual interest signal. Friction in this path — whether due to unavailable documents, non-structured contact flows, or form failures — directly causes disqualification at the vendor shortlisting stage.
+This segment includes PPK (Pejabat Pembuat Komitmen), Pengadaan staff, and BUMN procurement officers. These users are process-bound: they must validate that DBSN meets regulatory compliance requirements (SNI, TKDN, LKPP registration) before any engagement can proceed. Their primary journey is a trust-verification loop: they arrive looking for credentials, certifications, and structured references. The RFQ they submit is a formal inquiry, not a casual interest signal. Friction in this path — whether due to unavailable documents, non-structured contact flows, or form failures — directly causes disqualification at the vendor shortlisting stage. Once qualified and active, these users also expect visibility into procurement and delivery progress through a controlled tracking portal.
 
 **Segment B — B2B: Private Sector Technical Buyers**
 
-This segment includes procurement managers at private enterprises, EPC (Engineering, Procurement & Construction) project engineers, and facility managers. These users are efficiency-driven: they want to compare technical specifications, access datasheets, and initiate a scoped inquiry as quickly as possible. They are more tolerant of WhatsApp as a parallel channel but respond positively to structured self-service. Friction in this path is experienced as unnecessary form complexity or missing technical documentation — resulting in quiet abandonment.
+This segment includes procurement managers at private enterprises, EPC (Engineering, Procurement & Construction) project engineers, and facility managers. These users are efficiency-driven: they want to compare technical specifications, access datasheets, and initiate a scoped inquiry as quickly as possible. They are more tolerant of WhatsApp as a parallel channel but respond positively to structured self-service. Friction in this path is experienced as unnecessary form complexity or missing technical documentation — resulting in quiet abandonment. After RFQ qualification, these users require a secure login to track project/order status without relying solely on manual follow-up.
 
 ---
 
 ### 1.3 High-Level Architecture
 
-The locked architectural model is a **Hub-and-Spoke Sub-domain Architecture** delivered from a **single Greenfield monorepo**. The hub operates on the root domain and functions as the corporate trust center: it hosts the company profile, certifications, cross-sector portfolio, and routing CTAs that direct users to the appropriate product spoke. Each spoke is a dedicated sub-domain (e.g., `pju.sentradaya.com`, `solarcell.sentradaya.com`, `alatpetir.sentradaya.com`, `baterai.sentradaya.com`) hosting product-cluster content, product pages, and the segmented RFQ entry point.
+The locked architectural model is a **Hub-and-Spoke Sub-domain Architecture** delivered from a **single Greenfield monorepo**. The hub operates on the root domain and functions as the corporate trust center: it hosts the company profile, certifications, cross-sector portfolio, and routing CTAs that direct users to the appropriate product spoke. Each product spoke is a dedicated sub-domain (e.g., `pju.sentradaya.com`, `solarcell.sentradaya.com`, `alatpetir.sentradaya.com`, `baterai.sentradaya.com`) hosting product-cluster content, product pages, and the segmented RFQ entry point.
 
-All spokes share a single codebase, a shared design system (Tailwind CSS + Radix UI), and a unified data pipeline (Sanity CMS + PlanetScale). There are no divergent code forks between spokes — all differentiation is data-driven via Sanity schemas.
+In Version 3.0, the architecture is extended with a dedicated secure access spoke: **`dashboard.sentradaya.com`**. This sub-domain functions as the client login and tracking services portal (Layanan Pelacakan) for B2B and B2G clients who have successfully progressed through RFQ and qualification workflows. The dashboard is not a public marketing surface; it is an authenticated operational surface linked to client-specific tracking/project identifiers.
+
+All spokes share a single codebase, a shared design system (Tailwind CSS + Radix UI), and a unified data pipeline (Sanity CMS + PlanetScale). There are no divergent code forks between spokes — all differentiation is data-driven via Sanity schemas and role/access controls.
 
 **Locked Stack:** Next.js 14+ (App Router) · Turborepo · Sanity.io · Tailwind CSS + Radix UI · PlanetScale · NextAuth.js · Cloudflare Pages · Resend + Telegram Bot · GA4 + GSC + Cloudflare Analytics.
 
@@ -84,6 +88,7 @@ graph TD
     Root -->|"Sub-domain routing"| S2["🌐 solarcell.sentradaya.com\nSolar Cell\nSpoke"]
     Root -->|"Sub-domain routing"| S3["🌐 alatpetir.sentradaya.com\nLightning Protection\nSpoke"]
     Root -->|"Sub-domain routing"| SN["🌐 baterai.sentradaya.com\nAdditional Spokes\n(extensible)"]
+    Root -->|"Secure access"| SD["🔐 dashboard.sentradaya.com\nClient Tracking Services\n(B2B/B2G Login Portal)"]
 
     subgraph Monorepo ["📦 Single Turborepo Monorepo"]
         direction TB
@@ -94,8 +99,8 @@ graph TD
 
     subgraph DataLayer ["🗄️ Data & Integrations Layer"]
         direction TB
-        PS["PlanetScale\n(Transactional DB\nLeads · RFQ · Users)"]
-        Auth["NextAuth.js\n(Admin Auth)"]
+        PS["PlanetScale\n(Transactional DB\nLeads · RFQ · Users · Tracking Links)"]
+        Auth["NextAuth.js\n(Admin + Client Auth)"]
         Notif["Resend + Telegram Bot\n(Notifications)"]
         GA["GA4 + GSC + Cloudflare Analytics\n(Unified Telemetry)"]
     end
@@ -104,7 +109,7 @@ graph TD
         CF["Cloudflare Pages\n(Edge Hosting · CDN · Redirect Engine)"]
     end
 
-    S1 & S2 & S3 & SN --> NextJS
+    S1 & S2 & S3 & SN & SD --> NextJS
     NextJS --> DesignSystem
     NextJS --> SanityFed
     NextJS --> PS
@@ -132,6 +137,7 @@ graph TD
 | G6 | Capture Government Procurement Fit | LKPP-qualified inquiry rate | Establish & grow stable qualified baseline | Months 1–3 post-launch | RFQ form qualifiers + sales validation |
 | G7 | Mobile-First Performance Excellence | PageSpeed Insights mobile score | 90+ on key templates | At launch & maintained | PSI + Lighthouse CI |
 | G8 | Optimize Hub-to-Spoke Journey | Hub-to-Spoke CTR & journey completion | Strong routing efficiency per segment path | Months 1–2 post-launch | GA4 pathing + event instrumentation |
+| G9 | Establish Client Tracking Adoption | Qualified clients with active dashboard access and first tracking view | ≥ 80% of eligible clients onboarded | First 3 months post-launch | Dashboard auth logs + GA4 tracking events |
 
 ---
 
@@ -139,7 +145,7 @@ graph TD
 
 ### 2.1 Core User Flows
 
-Two primary user journeys govern the conversion architecture: the **B2G Government Procurement Validation Flow** and the **B2B Private Technical Buyer Flow**. Both journeys must be designed to minimize friction at the qualification and submission stage.
+Two primary user journeys govern the conversion architecture: the **B2G Government Procurement Validation Flow** and the **B2B Private Technical Buyer Flow**. Both journeys must be designed to minimize friction at the qualification and submission stage while enabling a controlled transition to post-submission tracking access for eligible clients.
 
 #### B2G — Government Procurement Validation Flow
 
@@ -161,6 +167,10 @@ flowchart TD
     J -->|"Not yet"| L["Continue Browsing\n(re-entry loop)"]
     K --> M{"Form Submission"}
     M -->|"Success"| N["✅ Confirmation Page\n+ Resend Email ACK\n+ Telegram Alert → Sales"]
+    N --> Q{"Qualified / Converted to Active Project?"}
+    Q -->|"Yes"| R["🔐 Provision Client Account\nfor dashboard.sentradaya.com"]
+    R --> S["📊 Tracking Services Access\n(Project / Order Status)"]
+    Q -->|"Not yet"| T["Standard Sales Follow-up\nwithout dashboard access"]
     M -->|"API / DB Failure"| O["⚠️ Fallback Handler\nPre-filled WhatsApp URL\nwith captured form data"]
     O --> P["📱 WhatsApp Handoff\nLead not lost"]
 
@@ -169,6 +179,7 @@ flowchart TD
     style N fill:#15803d,color:#fff
     style O fill:#b45309,color:#fff
     style P fill:#15803d,color:#fff
+    style S fill:#1d4ed8,color:#fff
 ```
 
 #### B2B — Private Technical Buyer Flow
@@ -191,6 +202,10 @@ flowchart TD
     H -->|"Download"| K["📥 Datasheet / Technical Doc\n(GA4: file_download event)\nNo mandatory sign-up — Phase 1"]
     I --> L{"Form Submission"}
     L -->|"Success"| M["✅ Confirmation\n+ Resend ACK Email\n+ Telegram Alert → Sales"]
+    M --> Q{"Qualified / Converted to Active Project?"}
+    Q -->|"Yes"| R["🔐 Provision Client Account\nfor dashboard.sentradaya.com"]
+    R --> S["📊 Tracking Services Access\n(Project / Order Status)"]
+    Q -->|"Not yet"| T["Standard Sales Follow-up\nwithout dashboard access"]
     L -->|"API / DB Failure"| N["⚠️ Fallback Handler\nPre-filled WhatsApp URL"]
     N --> O["📱 WhatsApp Handoff\nLead not lost"]
     K --> P["Re-engagement CTA\n(RFQ or WhatsApp)"]
@@ -201,6 +216,7 @@ flowchart TD
     style M fill:#15803d,color:#fff
     style N fill:#b45309,color:#fff
     style O fill:#15803d,color:#fff
+    style S fill:#1d4ed8,color:#fff
 ```
 
 ---
@@ -211,7 +227,7 @@ All spokes must render identically from the perspective of design token complian
 
 The design system is built on **Tailwind CSS** (utility-first styling with a shared token configuration) and **Radix UI** (accessible, headless component primitives). Component configurations — spacing scale, typography scale, color tokens, border radii, breakpoints — are defined once in the monorepo root and consumed by all apps. No spoke may introduce a local `tailwind.config.js` that deviates from the root configuration.
 
-Key shared component categories include: navigation headers, trust-badge blocks, certification card components, product spec tables, RFQ form shells (variant: B2G / B2B), floating CTA wrappers, portfolio grid components, and document download cards.
+Key shared component categories include: navigation headers, trust-badge blocks, certification card components, product spec tables, RFQ form shells (variant: B2G / B2B), floating CTA wrappers, portfolio grid components, document download cards, secure authentication forms, and tracking status cards for dashboard views.
 
 ---
 
@@ -221,7 +237,7 @@ DBSN's target audience operates in Indonesia's mobile-dominant usage context. Al
 
 **Floating CTA Rule (Critical).** The persistent WhatsApp floating CTA must never obscure RFQ form fields or the form's primary submit action on mobile viewports. On screens where the form is active, the CTA must either collapse, reposition, or render in a non-overlapping fixed zone. This is a hard launch gate requirement validated in QA.
 
-**Mobile Form UX.** RFQ forms must be thumb-navigable: sufficient tap-target sizing (minimum 44px), no horizontally scrolling form containers, native mobile input types (`tel`, `email`, `date`) where applicable, and clear inline validation messaging.
+**Mobile Form UX.** RFQ forms must be thumb-navigable: sufficient tap-target sizing (minimum 44px), no horizontally scrolling form containers, native mobile input types (`tel`, `email`, `date`) where applicable, and clear inline validation messaging. Dashboard login forms must follow the same touch and readability standards.
 
 **Performance as Accessibility.** A PSI score of 90+ on key mobile templates is a proxy for accessibility in bandwidth-constrained environments. Large image assets must use `next/image` with proper lazy loading. No unoptimized media may ship to production.
 
@@ -253,15 +269,17 @@ DBSN's target audience operates in Indonesia's mobile-dominant usage context. Al
 
 **REQ-010 — Authenticated Admin Dashboard.** Centralized dashboard for lead/RFQ management using NextAuth.js. Acceptance: Secure login and protected routes; lead list with filter, search, and source tag columns; segment-based views (Government vs. Private); export-ready data structure.
 
+**REQ-011 — Authenticated Client Tracking Portal (`dashboard.sentradaya.com`).** Implement secure B2B/B2G client login for Tracking Services (Layanan Pelacakan), linked to approved RFQ/project records. Acceptance: dedicated sub-domain routing active; only provisioned client accounts can authenticate; authenticated clients can view only their associated project/order tracking statuses; unauthorized access attempts are denied and logged.
+
 #### Should Have (P1)
 
-**REQ-011 — Documentation Library Expansion.** Richer technical library including datasheets, installation guides, and compliance references with indexing and category filtering beyond the Phase 1 certifications hub scope.
+**REQ-012 — Documentation Library Expansion.** Richer technical library including datasheets, installation guides, and compliance references with indexing and category filtering beyond the Phase 1 certifications hub scope.
 
-**REQ-012 — Product Comparison Tool.** Basic side-by-side comparison functionality for selected product categories within a spoke.
+**REQ-013 — Product Comparison Tool.** Basic side-by-side comparison functionality for selected product categories within a spoke.
 
 #### Nice to Have (P2)
 
-**REQ-013 — ROI Calculator & IoT Showcase.** Advanced pre-sales tooling (ROI/payback calculator) and smart-city capability presentation surface. Deferred to Phase 2/3.
+**REQ-014 — ROI Calculator & IoT Showcase.** Advanced pre-sales tooling (ROI/payback calculator) and smart-city capability presentation surface. Deferred to Phase 2/3.
 
 ---
 
@@ -269,7 +287,7 @@ DBSN's target audience operates in Indonesia's mobile-dominant usage context. Al
 
 The performance floor for the DBSN platform is defined by PSI (PageSpeed Insights) mobile scores and Core Web Vitals thresholds. These are not aspirational targets — they are launch gate requirements.
 
-**PageSpeed Insights.** All key page templates (hub home, spoke landing, product detail, RFQ page) must achieve a mobile PSI score of **90 or above**. Benchmarks will be captured at the start of Sprint 1 against current legacy pages to establish a baseline.
+**PageSpeed Insights.** All key page templates (hub home, spoke landing, product detail, RFQ page, client dashboard login, and tracking status overview) must achieve a mobile PSI score of **90 or above**. Benchmarks will be captured at the start of Sprint 1 against current legacy pages to establish a baseline.
 
 **TTFB (Time to First Byte).** Edge delivery via Cloudflare Pages must support sub-second TTFB on all server-rendered and static routes. ISR (Incremental Static Regeneration) must be configured appropriately for CMS-driven content.
 
@@ -283,9 +301,11 @@ The performance floor for the DBSN platform is defined by PSI (PageSpeed Insight
 
 **Admin Authentication.** The internal dashboard and all protected API routes must be gated by NextAuth.js with a least-privilege role model. Unauthenticated requests to protected endpoints must return 401/403 — never silently fail or expose lead data.
 
+**Client Portal Authentication.** `dashboard.sentradaya.com` must use secure authenticated access for provisioned B2B/B2G clients only. Client users must be explicitly linked to lead/project tracking records. Access scope must enforce row-level ownership constraints so clients can only retrieve their own tracking data. Session handling, password policy/reset flow, and login attempt throttling are mandatory.
+
 **Input Validation & Anti-Spam.** All RFQ submission endpoints must implement server-side input sanitization and anti-spam measures (e.g., honeypot fields, rate limiting). Legacy WordPress content ingested into Sanity must be sanitized to remove malformed HTML, shortcodes, and script injections before being published via Next.js rendering.
 
-**Data Handling.** All lead and RFQ records must be stored under TLS-enforced connections. PlanetScale access credentials must follow the principle of least privilege. No lead PII is logged in Cloudflare Analytics or GA4 raw event payloads.
+**Data Handling.** All lead, RFQ, user, and tracking-link records must be stored under TLS-enforced connections. PlanetScale access credentials must follow the principle of least privilege. No lead/client PII is logged in Cloudflare Analytics or GA4 raw event payloads.
 
 ---
 
@@ -311,9 +331,9 @@ All content for hub and spokes is managed in **Sanity.io** as the single source 
 
 All transactional lead and user data is stored in **PlanetScale** (MySQL-compatible). The following table structure is required at launch.
 
-**`leads` table** — `id` (CUID), `created_at`, `updated_at`, `segment` (enum: B2G | B2B), `source_domain`, `source_page_path`, `source_campaign_tag`, `utm_source`, `utm_medium`, `utm_campaign`, `contact_name`, `contact_email`, `contact_phone`, `company_name`, `product_category`, `quantity`, `project_scope`, `timeline`, `procurement_type` (B2G only), `notes`, `submission_status` (enum: received | contacted | qualified | disqualified), `fallback_triggered` (boolean — was WhatsApp fallback activated?), `fallback_wa_url` (if triggered).
+**`leads` table** — `id` (CUID), `created_at`, `updated_at`, `segment` (enum: B2G | B2B), `source_domain`, `source_page_path`, `source_campaign_tag`, `utm_source`, `utm_medium`, `utm_campaign`, `contact_name`, `contact_email`, `contact_phone`, `company_name`, `product_category`, `quantity`, `project_scope`, `timeline`, `procurement_type` (B2G only), `notes`, `submission_status` (enum: received | contacted | qualified | disqualified), `fallback_triggered` (boolean — was WhatsApp fallback activated?), `fallback_wa_url` (if triggered), `tracking_project_id` (nullable, assigned when lead progresses to tracked project/order), `dashboard_access_granted_at` (nullable datetime), `dashboard_access_status` (enum: not_eligible | pending | granted | revoked).
 
-**`users` table** — `id`, `email`, `name`, `role` (enum: admin | viewer), `created_at` — used exclusively for internal dashboard authentication via NextAuth.js.
+**`users` table** — `id`, `email`, `name`, `role` (enum: admin | viewer | client), `created_at`, `linked_lead_id` (nullable FK to `leads.id`), `client_company_name` (nullable), `tracking_scope_type` (nullable enum: project | order), `tracking_scope_ids` (nullable JSON array of authorized tracking/project IDs), `last_login_at` (nullable datetime), `is_active` (boolean default true) — used for internal dashboard authentication and authenticated client tracking access via NextAuth.js.
 
 **`redirect_map` table** — `legacy_url`, `target_url`, `spoke` — used by the edge redirect engine to resolve 301 mappings at runtime without code deploys.
 
@@ -335,6 +355,9 @@ All GA4 events must be instrumented at launch. These are mandatory — not optio
 | `hub_to_spoke_click` | User clicks a spoke navigation CTA from the hub | `spoke_target`, `cta_label`, `hub_section` |
 | `portfolio_view` | User views a portfolio entry detail page | `project_type`, `client_category`, `related_spoke` |
 | `certification_view` | User opens a certification detail page | `cert_type`, `cert_title` |
+| `dashboard_login_success` | Authorized client successfully logs into `dashboard.sentradaya.com` | `user_role`, `segment`, `linked_lead_id` |
+| `dashboard_login_failure` | Client login attempt fails | `failure_reason`, `attempt_source` |
+| `tracking_status_view` | Authenticated client opens project/order tracking screen | `tracking_scope_type`, `tracking_id`, `segment` |
 
 ---
 
@@ -360,7 +383,9 @@ New RFQ submissions and lead captures must trigger two parallel notification cha
 
 **Resend (Email).** Two email sends are triggered per successful RFQ submission: (1) a transactional acknowledgment email to the submitter confirming receipt and setting response-time expectations; (2) an internal notification email to the designated DBSN sales inbox with the full lead details and a link to the dashboard record. Resend templates must be maintained in version control. No raw API keys may be stored client-side.
 
-**Telegram Bot.** An internal Telegram bot sends an alert to the DBSN sales operations channel for every new RFQ submission. The alert payload includes: segment (B2G/B2B), spoke, company name, product category, and a direct dashboard link. The Telegram bot is also configured to alert on submission failures — if the RFQ API returns an error, the sales team is notified that a WhatsApp fallback was triggered.
+When a lead is approved for Tracking Services, an additional provisioning email is sent to the designated client contact containing dashboard onboarding instructions and a secure login/reset path for `dashboard.sentradaya.com`.
+
+**Telegram Bot.** An internal Telegram bot sends an alert to the DBSN sales operations channel for every new RFQ submission. The alert payload includes: segment (B2G/B2B), spoke, company name, product category, and a direct dashboard link. The Telegram bot is also configured to alert on submission failures — if the RFQ API returns an error, the sales team is notified that a WhatsApp fallback was triggered. Optional secondary alerting is enabled for client-access provisioning and revocation actions for audit visibility.
 
 ---
 
@@ -420,28 +445,30 @@ sequenceDiagram
 
 Design QA must be completed before any checkpoint sign-off. The following consistency checks must pass across all hub and spoke templates.
 
-All pages must render correctly on three viewport breakpoints: 375px (mobile S), 768px (tablet), and 1280px (desktop). The shared design system token set — spacing, typography, color, border radius — must be identical across hub and spokes, confirmed via visual regression. No spoke may introduce a locally overridden Tailwind config. The floating WhatsApp CTA must be validated on mobile viewports across all page types to confirm it does not occlude RFQ form fields or the submit button. All RFQ form variants (B2G and B2B) must render without horizontal scroll on 375px viewport.
+All pages must render correctly on three viewport breakpoints: 375px (mobile S), 768px (tablet), and 1280px (desktop). The shared design system token set — spacing, typography, color, border radius — must be identical across hub and spokes, confirmed via visual regression. No spoke may introduce a locally overridden Tailwind config. The floating WhatsApp CTA must be validated on mobile viewports across all page types to confirm it does not occlude RFQ form fields or the submit button. All RFQ form variants (B2G and B2B) must render without horizontal scroll on 375px viewport. Dashboard login and tracking-status templates must pass the same mobile legibility and touch-target checks.
 
 ### 6.2 Tech & Load Testing
 
 **RFQ Fallback Simulation.** A forced-failure test must be executed in the staging environment by deliberately making the PlanetScale connection unavailable and submitting an RFQ. The expected outcome is: (1) GA4 `rfq_submit_failure` event fires with `fallback_triggered: true`; (2) fallback UI renders with correct pre-filled WhatsApp URL; (3) Telegram failure alert is received by the ops channel. This test is a hard launch gate.
 
-**Sub-domain Routing Verification.** All configured spoke sub-domains must be verified to route correctly from Cloudflare to the correct Next.js app router segment. Cross-spoke navigation links from the hub must be tested for correctness in both staging and production DNS environments.
+**Sub-domain Routing Verification.** All configured spoke sub-domains, including `dashboard.sentradaya.com`, must be verified to route correctly from Cloudflare to the correct Next.js app router segment. Cross-spoke navigation links from the hub must be tested for correctness in both staging and production DNS environments.
+
+**Dashboard Access & Data Isolation Test.** Validate client onboarding and login lifecycle end-to-end: account provisioning from qualified lead, first login flow, and tracking-status retrieval. Attempt cross-account access to confirm row-level isolation blocks unauthorized project/order visibility. Failed login attempt throttling and audit logging must be verified.
 
 **301 Redirect Coverage Audit.** The complete legacy URL inventory must be run through the redirect engine in staging. Zero unresolved 404s are acceptable. Spot-check coverage must include the top 20 organic pages per legacy domain as identified in GSC.
 
-**Load & Spike Testing.** Simulate realistic campaign spike traffic against the RFQ submission endpoint and hub homepage. Confirm Cloudflare edge caching behavior and PlanetScale connection pool behavior under concurrent load.
+**Load & Spike Testing.** Simulate realistic campaign spike traffic against the RFQ submission endpoint and hub homepage. Confirm Cloudflare edge caching behavior and PlanetScale connection pool behavior under concurrent load. Execute additional concurrent-session tests on dashboard login and tracking endpoints to validate stable authenticated performance.
 
 ### 6.3 Approval Gates
 
 **End of Sprint 1 Gate.** The following must be demonstrable before Sprint 2 begins: hub and at least one spoke routing operational in staging; 301 mapping framework implemented and partially validated; RFQ pipeline writes successfully to PlanetScale; certifications hub MVP live in staging.
 
-**Mid Sprint 2 Gate.** Admin dashboard authentication and lead listing are functional; Resend and Telegram notification workflows are operational; WhatsApp integration is tracked via GA4.
+**Mid Sprint 2 Gate.** Admin dashboard authentication and lead listing are functional; Resend and Telegram notification workflows are operational; WhatsApp integration is tracked via GA4; dashboard sub-domain routing and login shell are operational in staging.
 
-**Pre-Launch Final Gate (Leadership Approval).** A full sprint presentation must be delivered to DBSN leadership before any production deployment. The presentation must demonstrate: minimum 20 portfolio entries; PSI mobile score 90+ on all key templates; CWV checks passing acceptable thresholds; RFQ fallback validated under forced failure test; SEO migration QA sign-off; and a go/no-go risk summary from the engineering lead. Production deployment is blocked until explicit leadership approval is received.
+**Pre-Launch Final Gate (Leadership Approval).** A full sprint presentation must be delivered to DBSN leadership before any production deployment. The presentation must demonstrate: minimum 20 portfolio entries; PSI mobile score 90+ on all key templates (including dashboard login/tracking templates); CWV checks passing acceptable thresholds; RFQ fallback validated under forced failure test; dashboard access provisioning and data isolation test pass; SEO migration QA sign-off; and a go/no-go risk summary from the engineering lead. Production deployment is blocked until explicit leadership approval is received.
 
 ---
 
-*End of PRD — Version 2.0*
+*End of PRD — Version 3.0*
 
-*This document reflects all finalized discovery outputs including locked architecture, technical stack, 1-month compressed timeline, integration priorities, and explicit migration, performance, and fallback risk controls.*
+*This document reflects all finalized discovery outputs including locked architecture, technical stack, 1-month compressed timeline, integration priorities, secure tracking-portal expansion, and explicit migration, performance, and fallback risk controls.*

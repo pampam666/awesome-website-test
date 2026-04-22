@@ -1,6 +1,6 @@
 # PRD: DBSN Unified Digital Ecosystem (Hub-and-Spoke Sub-domain Architecture)
 
-**Author:** Product + Engineering (AI-assisted)
+**Author:** Pramono
 **Date:** 2026-04-20
 **Status:** Draft (Discovery Complete)
 **Version:** 1.0
