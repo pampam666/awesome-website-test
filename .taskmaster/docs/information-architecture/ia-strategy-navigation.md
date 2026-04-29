@@ -16,7 +16,7 @@
 Arsitektur Informasi ini dibangun di atas model **Hub-and-Spoke** yang melayani dua segmen pengguna utama dengan kebutuhan yang berbeda secara fundamental:
 
 | Aspek | B2G (Pemerintah) | B2B (Swasta) |
-|-------|-------------------|--------------|
+|-------|-------------------|--------------| 
 | **Mindset** | Trust-first (Validasi Kepatuhan) | Efficiency-first (Riset Spesifikasi) |
 | **Prioritas IA** | Sertifikasi & Portofolio di navigasi utama | Akses langsung ke Spoke & PDP |
 | **Titik Masuk Utama** | Hub (sentradaya.com) | Spoke langsung via SEO/kampanye |
@@ -39,12 +39,24 @@ Arsitektur Informasi ini dibangun di atas model **Hub-and-Spoke** yang melayani 
 
 ### 2.1 Header — Hub (sentradaya.com)
 
-```
-+---------------------------------------------------------------------+
-|  [Logo DBSN]   Beranda | Tentang Kami v | Sertifikasi |             |
-|                 Portofolio | Produk Kami v | Hubungi Kami            |
-|                                              [Ajukan Penawaran]     |
-+---------------------------------------------------------------------+
+```mermaid
+flowchart TB
+ subgraph HEADER_HUB["Header Navigasi: sentradaya.com (Hub)"]
+    direction LR
+        H_LOGO["[Logo] DBSN"]
+        H_NAV1["Beranda"]
+        H_NAV2["Tentang Kami ▼"]
+        H_NAV3["Sertifikasi"]
+        H_NAV4["Portofolio"]
+        H_NAV5["Produk Kami ▼"]
+        H_NAV6["Hubungi Kami"]
+        H_CTA["[Tombol] Ajukan Penawaran"]
+ end
+
+    %% Mengunci urutan layout dari kiri ke kanan
+    H_LOGO --- H_NAV1 --- H_NAV2 --- H_NAV3 --- H_NAV4 --- H_NAV5 --- H_NAV6 --- H_CTA
+
+    style H_CTA fill:#007
 ```
 
 | Item Navigasi | Tipe | Perilaku |
@@ -63,12 +75,27 @@ Arsitektur Informasi ini dibangun di atas model **Hub-and-Spoke** yang melayani 
 
 ### 2.2 Header — Spoke ([produk].sentradaya.com)
 
-```
-+---------------------------------------------------------------------+
-|  [Logo DBSN] PJU - Penerangan Jalan Umum                           |
-|  <- sentradaya.com | Beranda | Katalog v | Dokumentasi              |
-|                                              [Ajukan Penawaran]     |
-+---------------------------------------------------------------------+
+```mermaid
+---
+config:
+  layout: dagre
+---
+flowchart TB
+ subgraph HEADER_SPOKE["Header Navigasi: pju.sentradaya.com (Spoke)"]
+    direction LR
+        S_LOGO["[Logo DBSN] PJU - Penerangan Jalan Umum"]
+        S_BACK["⬅ sentradaya.com"]
+        S_NAV1["Beranda"]
+        S_NAV2["Katalog ▼"]
+        S_NAV3["Portofolio"]
+        S_NAV4["Artikel"]
+        S_CTA["[Tombol] Ajukan Penawaran"]
+ end
+
+    %% Mengunci urutan layout dari kiri ke kanan
+    S_LOGO --- S_BACK --- S_NAV1 --- S_NAV2 --- S_NAV3 --- S_NAV4 --- S_CTA
+    
+    style S_CTA fill:#007
 ```
 
 | Item Navigasi | Tipe | Perilaku |
@@ -76,7 +103,8 @@ Arsitektur Informasi ini dibangun di atas model **Hub-and-Spoke** yang melayani 
 | **← sentradaya.com** | Back Link | → Hub root domain (navigasi cross-domain) |
 | **Beranda** | Link | → `/` (beranda spoke) |
 | **Katalog Produk** | Dropdown | → Daftar Lini Produk dengan sub-kategori |
-| **Dokumentasi** | Link | → `/dokumentasi` (datasheet, panduan) |
+| **Portofolio** | Link | → `/portofolio` (portofolio proyek spoke) |
+| **Artikel** | Link | → `/artikel` (artikel dan konten spoke) |
 | **Ajukan Penawaran** | CTA Button (Primary) | → `/permintaan-penawaran` |
 
 **Mobile:** Hamburger menu. Back-link ke Hub selalu visible di atas.
@@ -85,11 +113,28 @@ Arsitektur Informasi ini dibangun di atas model **Hub-and-Spoke** yang melayani 
 
 ### 2.3 Header — Dashboard (dashboard.sentradaya.com)
 
-```
-+---------------------------------------------------------------------+
-|  [Logo DBSN] Layanan Pelacakan                                      |
-|  Beranda | Pelacakan | Profil Akun          [Nama User] | Keluar    |
-+---------------------------------------------------------------------+
+```mermaid
+---
+config:
+  layout: dagre
+---
+flowchart TB
+ subgraph HEADER_DASHBOARD["Header Navigasi: dashboard.sentradaya.com (Bagian 2.3)"]
+    direction LR
+        DH_LOGO["[Logo DBSN] Layanan Pelacakan"]
+        DH_NAV1["Beranda"]
+        DH_NAV2["Pelacakan"]
+        DH_NAV3["Profil Akun"]
+        DH_SPACE["           "] %% Spacer untuk memisahkan menu kiri dan kanan
+        DH_USER["[Nama User]"]
+        DH_LOGOUT["[Aksi] Keluar"]
+ end
+
+    %% Mengunci urutan layout dari kiri ke kanan
+    DH_LOGO --- DH_NAV1 --- DH_NAV2 --- DH_NAV3 --- DH_SPACE --- DH_USER --- DH_LOGOUT
+    
+    style DH_USER fill:#007
+    style DH_LOGOUT fill:#dc3545
 ```
 
 | Item Navigasi | Tipe | Perilaku |

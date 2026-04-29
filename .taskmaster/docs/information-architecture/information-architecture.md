@@ -26,9 +26,9 @@ sentradaya.com                    → Hub (Pusat Kepercayaan Korporat)
 ### Segmen Pengguna
 
 | Segmen | Persona | Kebutuhan Utama |
-|--------|---------|-----------------|
+|--------|---------|-----------------| 
 | **B2G** | PPK, Staf Pengadaan, BUMN | Validasi SNI/TKDN/LKPP → Portofolio → RFQ Formal |
-| **B2B** | Procurement, EPC, Facility Manager | Riset Spesifikasi → Datasheet → RFQ atau WhatsApp |
+| **B2B** | Procurement, EPC, Facility Manager | Riset Spesifikasi → Datasheet → Artikel → RFQ atau WhatsApp |
 
 ---
 
@@ -43,14 +43,14 @@ Arsitektur Informasi terbagi dalam 3 dokumen:
 - Elemen persisten (WhatsApp CTA, Breadcrumb, Trust Badge)
 
 ### 2. [Sitemap Hub, Spoke, & Dashboard](./ia-sitemaps.md)
-- **Hub Sitemap** — 7 halaman utama: Beranda, Tentang Kami, Pusat Sertifikasi, Portofolio, Produk, RFQ, Kontak
-- **Spoke Sitemap (Template)** — Kedalaman 3 level: Lini Produk → Sub-kategori → Detail Produk (PDP)
+- **Hub Sitemap** — 9 halaman utama: Beranda, Tentang Kami, Pusat Sertifikasi, Portofolio, Produk, RFQ, Kontak, Artikel, Detail Artikel
+- **Spoke Sitemap (Template)** — Kedalaman 3 level: Lini Produk → Sub-kategori → Detail Produk (PDP); plus Portofolio Proyek, Artikel, dan RFQ
 - **Dashboard Sitemap** — Portal autentikasi: Login, Pelacakan (tab Proyek/Pesanan), Profil
 - Struktur URL dan komponen PDP
 
 ### 3. [Alur Pengguna Inti](./ia-user-flows.md)
 - **Alur B2G** — Validasi legalitas → Verifikasi portofolio → RFQ formal → Dashboard pelacakan
-- **Alur B2B** — Riset produk → Unduh datasheet → RFQ/WhatsApp → Dashboard pelacakan
+- **Alur B2B** — Riset produk → Unduh datasheet → Baca Artikel → RFQ/WhatsApp → Dashboard pelacakan
 - **Alur Fallback** — Penanganan kegagalan API dengan WhatsApp pre-filled
 - Perbandingan touchpoint dan GA4 event mapping
 
@@ -65,6 +65,8 @@ Arsitektur Informasi terbagi dalam 3 dokumen:
 | **RFQ Mandiri** | Halaman dedicated `/permintaan-penawaran` dengan pre-fill URL params |
 | **Dashboard Phase 1** | Pelacakan status saja (daftar tunggal + tab filter) |
 | **Bahasa** | Bahasa Indonesia formal untuk semua label navigasi |
+| **Artikel di Hub & Spoke** | Halaman Artikel (`/artikel`) dan Detail Artikel (`/artikel/slug`) tersedia di Hub dan setiap Spoke sebagai kanal konten edukasi organik |
+| **Portofolio di Spoke** | Setiap Spoke memiliki halaman Portofolio Proyek (`/portofolio`) dan Detail Proyek (`/portofolio/slug`) kontekstual terhadap produk spoke |
 
 ---
 

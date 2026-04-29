@@ -101,6 +101,11 @@ flowchart TD
     ACTION -->|"Ajukan Penawaran"| RFQPAGE["Halaman RFQ /permintaan-penawaran dengan param produk=slug"]
     ACTION -->|"Kontak Cepat"| WHATSAPP["WhatsApp Click-to-Chat - GA4: whatsapp_click"]
     ACTION -->|"Unduh Dokumen"| DOWNLOAD["Unduh Datasheet PDF - GA4: file_download"]
+    ACTION -->|"Baca Konten"| ARTIKEL["Artikel Spoke /artikel - GA4: article_view"]
+
+    ARTIKEL --> ARTDET["Detail Artikel - Konten Edukasi & Produk Terkait"]
+    ARTDET --> REENGAGE2["Re-engagement CTA: Ajukan Penawaran atau WhatsApp"]
+    REENGAGE2 --> RFQPAGE
 
     DOWNLOAD --> REENGAGE["Re-engagement CTA: Ajukan Penawaran atau WhatsApp"]
     REENGAGE --> RFQPAGE
@@ -129,9 +134,11 @@ flowchart TD
 | 4a | PDP | Unduh datasheet | `file_download` |
 | 4b | PDP | Klik WhatsApp | `whatsapp_click` |
 | 4c | Ajukan Penawaran | Klik CTA, formulir pre-filled | `rfq_start` |
-| 5 | Formulir B2B | Kirim formulir | `rfq_submit_attempt` → `rfq_submit_success` |
-| 6 | Konfirmasi | Terima email acknowledgment | - |
-| 7 | Dashboard | Login dan lihat status pesanan | `dashboard_login_success` → `tracking_status_view` |
+| 4d | Artikel Spoke | Baca konten edukasi produk | `article_view` |
+| 5 | Detail Artikel | Baca artikel lengkap, klik CTA re-engagement | `article_cta_click` |
+| 6 | Formulir B2B | Kirim formulir | `rfq_submit_attempt` → `rfq_submit_success` |
+| 7 | Konfirmasi | Terima email acknowledgment | - |
+| 8 | Dashboard | Login dan lihat status pesanan | `dashboard_login_success` → `tracking_status_view` |
 
 ---
 
@@ -141,7 +148,7 @@ flowchart TD
 |-------|----------|----------|
 | **Entry point** | Selalu via Hub | Sering langsung ke Spoke via SEO |
 | **Langkah pertama** | Validasi sertifikasi/legalitas | Riset spesifikasi produk |
-| **Jumlah touchpoint sebelum RFQ** | 3-5 (sertifikasi + portofolio + produk) | 2-3 (katalog + PDP) |
+| **Jumlah touchpoint sebelum RFQ** | 3-5 (sertifikasi + portofolio + produk) | 2-4 (katalog + PDP + artikel opsional) |
 | **Field formulir khusus** | Nama Proyek, Ref DIPA, Jenis Pengadaan | Lingkup proyek, timeline |
 | **Toleransi WhatsApp** | Rendah (butuh jalur formal) | Tinggi (channel paralel) |
 | **Tipe pelacakan** | Proyek (multi-milestone) | Pesanan (status delivery) |

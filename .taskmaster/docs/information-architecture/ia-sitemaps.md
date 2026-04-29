@@ -11,52 +11,70 @@
 Hub berfungsi sebagai **Pusat Kepercayaan Korporat** — tempat utama untuk validasi legalitas, portofolio, dan routing ke spoke produk.
 
 ```mermaid
-flowchart TD
-    HUB["sentradaya.com - Hub"]
-
-    HUB --> HOME["Beranda /"]
-    HUB --> ABOUT["Tentang Kami /tentang-kami"]
-    HUB --> CERT["Pusat Sertifikasi /sertifikasi"]
-    HUB --> PORT["Portofolio Proyek /portofolio"]
-    HUB --> PROD["Produk Kami /produk"]
-    HUB --> RFQ["Ajukan Penawaran /permintaan-penawaran"]
-    HUB --> CONTACT["Hubungi Kami /hubungi-kami"]
-
-    HOME --> H1["Hero + Routing CTA"]
-    HOME --> H2["Trust Badge Bar: SNI TKDN LKPP ISO"]
-    HOME --> H3["Grid Navigasi ke Spoke"]
-    HOME --> H4["Highlight Portofolio Unggulan"]
-    HOME --> H5["CTA Akhir: Ajukan Penawaran"]
-
-    ABOUT --> A1["Profil Perusahaan /tentang-kami/profil"]
-    ABOUT --> A2["Visi dan Misi /tentang-kami/visi-misi"]
-    ABOUT --> A3["Tim Manajemen /tentang-kami/tim"]
-
-    CERT --> C1["Sertifikat SNI /sertifikasi/sni"]
-    CERT --> C2["Sertifikat TKDN /sertifikasi/tkdn"]
-    CERT --> C3["Registrasi LKPP /sertifikasi/lkpp"]
-    CERT --> C4["Sertifikat ISO /sertifikasi/iso"]
-    CERT --> C5["Dokumen Lainnya /sertifikasi/lainnya"]
-    C1 --> CD["Detail Sertifikat /sertifikasi/tipe/slug - Metadata dan Unduh"]
-    C2 --> CD
-    C3 --> CD
-    C4 --> CD
-
-    PORT --> PF["Filter: Pemerintah - BUMN - Swasta - EPC"]
-    PF --> PD["Detail Proyek /portofolio/slug"]
-
-    PROD --> PR1["PJU -> pju.sentradaya.com"]
-    PROD --> PR2["Panel Surya -> solarcell.sentradaya.com"]
-    PROD --> PR3["Penangkal Petir -> alatpetir.sentradaya.com"]
-    PROD --> PR4["Baterai -> baterai.sentradaya.com"]
-
-    RFQ --> RS["Pemilihan Segmen"]
-    RS --> RG["Formulir B2G: Nama Proyek, Ref DIPA, Kuantitas, Jadwal, Jenis Pengadaan"]
-    RS --> RB["Formulir B2B: Produk, Lingkup, Kuantitas, Jadwal, Kontak"]
-
-    CONTACT --> CT1["Informasi Kontak"]
-    CONTACT --> CT2["Formulir Kontak Umum"]
-    CONTACT --> CT3["Peta Lokasi"]
+---
+config:
+  layout: dagre
+---
+flowchart TB
+ subgraph HOME["Beranda /"]
+    direction LR
+        H1["Hero + Routing CTA"]
+        H2["Trust Badge Bar: SNI TKDN LKPP ISO"]
+        H3["Grid Navigasi ke Spoke"]
+        H4["Highlight Portofolio Unggulan"]
+        H5["CTA Akhir: Ajukan Penawaran"]
+  end
+ subgraph ABOUT["Tentang Kami /tentang-kami"]
+    direction LR
+        A1["Profil Perusahaan /tentang-kami/profil"]
+        A2["Visi dan Misi /tentang-kami/visi-misi"]
+        A3["Tim Manajemen /tentang-kami/tim"]
+  end
+ subgraph CERT["Pusat Sertifikasi /sertifikasi"]
+    direction LR
+        C1["Sertifikat SNI /sertifikasi/sni"]
+        C2["Sertifikat TKDN /sertifikasi/tkdn"]
+        C3["Registrasi LKPP /sertifikasi/lkpp"]
+        C4["Sertifikat ISO /sertifikasi/iso"]
+  end
+ subgraph PORT["Portofolio Proyek /portofolio"]
+    direction LR
+        PF["Filter: Pemerintah - BUMN - Swasta - EPC"]
+  end
+ subgraph PROD["Produk Kami /produk"]
+    direction LR
+        PR1["PJU -> pju.sentradaya.com"]
+        PR2["Panel Surya -> solarcell.sentradaya.com"]
+        PR3["Penangkal Petir -> alatpetir.sentradaya.com"]
+        PR4["Baterai -> baterai.sentradaya.com"]
+  end
+ subgraph RFQ["Pengajuan RFQ /rfq"]
+    direction LR
+        RS["Pemilihan Segmen"]
+  end
+ subgraph CONTACT["Hubungi Kami /hubungi-kami"]
+    direction LR
+        CT1["Informasi Kontak"]
+        CT2["Formulir Kontak Umum"]
+        CT3["Peta Lokasi"]
+  end
+ subgraph ART["Artikel /artikel"]
+    direction LR
+        ART1["Hero Section"]
+        ART2["Kategori Artikel"]
+        ART3["Grid Daftar Artikel"]
+  end
+ subgraph ART_DETAIL["Detail Artikel /artikel/slug"]
+    direction LR
+        AD1["Judul & Meta Info"]
+        AD2["Konten Artikel"]
+        AD3["Artikel Terkait"]
+  end
+    HUB["HUB sentradaya.com"] --> HOME & ABOUT & CERT & PORT & PROD & RFQ & CONTACT & ART
+    CERT L_CERT_CD_0@--> CD["Detail Sertifikat /sertifikasi/tipe/slug - Metadata dan Unduh"]
+    RFQ L_RFQ_RG_0@--> RG["Formulir B2G: Nama Proyek, Ref DIPA, Kuantitas, Jadwal, Jenis Pengadaan"] & RB["Formulir B2B: Produk, Lingkup, Kuantitas, Jadwal, Kontak"]
+    PORT L_PORT_PD_0@--> PD["Detail Proyek /portofolio/slug"]
+    ART --> ART_DETAIL
 ```
 
 ### Penjelasan Struktur Hub
@@ -70,6 +88,8 @@ flowchart TD
 | **Produk Kami** | Mega menu routing ke spoke sub-domain | Semua |
 | **Ajukan Penawaran** | Formulir RFQ tersegmentasi (B2G/B2B) | Semua (konversi) |
 | **Hubungi Kami** | Kontak, lokasi, formulir umum | Semua |
+| **Artikel** | Konten edukasi dan informasi produk untuk penemuan organik | Semua |
+| **Detail Artikel** | Artikel lengkap dengan konten dan referensi terkait | Semua |
 
 ---
 
@@ -80,45 +100,65 @@ Template spoke ini berlaku untuk **semua klaster produk** (PJU, Panel Surya, Pen
 ### 4.1 Hirarki Halaman Spoke
 
 ```mermaid
-flowchart TD
-    SPOKE["pju.sentradaya.com - Spoke PJU"]
-
-    SPOKE --> SH["Beranda Spoke /"]
-    SPOKE --> SC["Katalog Produk /katalog"]
-    SPOKE --> SD["Dokumentasi Teknis /dokumentasi"]
-    SPOKE --> SR["Ajukan Penawaran /permintaan-penawaran"]
-
-    SH --> SH1["Hero: Tagline Produk + CTA Utama"]
-    SH --> SH2["Produk Unggulan: 3-6 Produk Pilihan"]
-    SH --> SH3["Badge Sertifikasi: SNI dan TKDN Terkait"]
-    SH --> SH4["CTA Akhir: Ajukan Penawaran"]
-
-    SC --> L1["Lini Produk: PJU Tenaga Surya /katalog/pju-tenaga-surya"]
-    SC --> L2["Lini Produk: PJU Konvensional /katalog/pju-konvensional"]
-
-    L1 --> S1["Sub-kategori: All-in-One /katalog/pju-tenaga-surya/all-in-one"]
-    L1 --> S2["Sub-kategori: Split Type /katalog/pju-tenaga-surya/split-type"]
-
-    L2 --> S3["Sub-kategori: LED /katalog/pju-konvensional/led"]
-    L2 --> S4["Sub-kategori: HPS-SON /katalog/pju-konvensional/hps-son"]
-
-    S1 --> PDP["Detail Produk /katalog/lini/sub/slug"]
-    S2 --> PDP
-    S3 --> PDP
-    S4 --> PDP
-
-    PDP --> PDP1["Spesifikasi Teknis: Tabel Key-Value"]
-    PDP --> PDP2["Galeri Gambar Produk"]
-    PDP --> PDP3["Unduh Datasheet PDF"]
-    PDP --> PDP4["Sertifikasi Terkait: Link ke Hub"]
-    PDP --> PDP5["CTA: Ajukan Penawaran dengan param produk=slug"]
-    PDP --> PDP6["WhatsApp CTA Kontekstual"]
-
-    SD --> SD1["Datasheet Produk"]
-    SD --> SD2["Panduan Instalasi"]
-    SD --> SD3["Referensi Sertifikasi"]
-
-    SR --> SRF["Formulir RFQ: Pre-filled dari Spoke dan Produk"]
+---
+config:
+  layout: dagre
+---
+flowchart TB
+ subgraph SH["Beranda Spoke /"]
+    direction LR
+        SH1["Hero: Tagline Produk + CTA Utama"]
+        SH2["Produk Unggulan: 3-6 Produk Pilihan"]
+        SH3["Badge Sertifikasi: SNI dan TKDN Terkait"]
+        SH4["CTA Akhir: Ajukan Penawaran"]
+  end
+ subgraph SC["Katalog Produk /katalog"]
+    direction LR
+        S1["Pencarian"]
+        S2["Filter: Lini Produk - Kategori"]
+  end
+ subgraph PDP["Detail Produk /katalog/lini/sub/slug"]
+    direction LR
+        PDP1["Spesifikasi Teknis: Tabel Key-Value"]
+        PDP2["Galeri Gambar Produk"]
+        PDP3["Unduh Datasheet PDF"]
+        PDP4["Sertifikasi Terkait: Link ke Hub"]
+        PDP5["CTA: Ajukan Penawaran dengan param produk=slug"]
+        PDP6["WhatsApp CTA Kontekstual"]
+  end
+ subgraph SR["Ajukan Penawaran /rfq"]
+    direction LR
+        SRF["Formulir RFQ: Pre-filled dari Spoke dan Produk"]
+  end
+ subgraph SPORT["Portofolio Proyek /portofolio"]
+    direction LR
+        SPORT1["Hero Section"]
+        SPORT2["Filter Kategori Proyek"]
+        SPORT3["Grid Item Proyek"]
+        SPORT4["CTA Section"]
+  end
+ subgraph SPORT_DETAIL["Detail Proyek /portofolio/slug"]
+    direction LR
+        SPD1["Hero: Judul & Info Klien"]
+        SPD2["Spesifikasi Instalasi"]
+        SPD3["Galeri Dokumentasi"]
+  end
+ subgraph ART["Artikel /artikel"]
+    direction LR
+        ART1["Hero Section"]
+        ART2["Kategori Artikel"]
+        ART3["Grid Daftar Artikel"]
+  end
+ subgraph ART_DETAIL["Detail Artikel /artikel/slug"]
+    direction LR
+        AD1["Judul & Meta Info"]
+        AD2["Konten Artikel"]
+        AD3["Artikel Terkait"]
+  end
+    SPOKE["SPOKE [produk].sentradaya.com"] --> SH & SC & SPORT & ART & SR
+    SC --> PDP
+    SPORT --> SPORT_DETAIL
+    ART --> ART_DETAIL
 ```
 
 ### 4.2 Struktur URL Spoke (3 Level)
@@ -130,8 +170,11 @@ flowchart TD
 │   ├── /katalog/[lini-produk]                 → Level 1: Lini Produk
 │   │   ├── /katalog/[lini]/[sub-kategori]     → Level 2: Sub-kategori
 │   │   │   └── /katalog/[lini]/[sub]/[slug]   → Level 3: Detail Produk (PDP)
-├── /dokumentasi                               → Perpustakaan Teknis
-├── /permintaan-penawaran                      → Formulir RFQ (pre-fill)
+├── /portofolio                                → Daftar Portofolio Proyek Spoke
+│   └── /portofolio/[slug]                     → Detail Proyek Spoke
+├── /artikel                                   → Daftar Artikel Spoke
+│   └── /artikel/[slug]                        → Detail Artikel Spoke
+├── /rfq                                       → Formulir RFQ (pre-fill)
 ```
 
 ### 4.3 Komponen PDP (Product Detail Page)
@@ -219,6 +262,7 @@ dashboard.sentradaya.com/
 | **Pengiriman** | Dalam pengiriman | Oranye |
 | **Selesai** | Proyek/pesanan selesai | Hijau |
 | **Ditunda** | Ditunda sementara | Merah |
+
 
 > **Phase 2 (ditunda):** Unduh dokumen (faktur, kontrak, surat jalan) dari dalam dashboard.
 
