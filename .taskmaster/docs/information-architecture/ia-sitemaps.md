@@ -16,6 +16,9 @@ config:
   layout: dagre
 ---
 flowchart TB
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
+
  subgraph HOME["Beranda /"]
     direction LR
         H1["Hero + Routing CTA"]
@@ -71,10 +74,14 @@ flowchart TB
         AD3["Artikel Terkait"]
   end
     HUB["HUB sentradaya.com"] --> HOME & ABOUT & CERT & PORT & RFQ & PROD & CONTACT & ART
-    CERT L_CERT_CD_0@--> CD["Detail Sertifikat /sertifikasi/tipe/slug - Metadata dan Unduh"]
-    RFQ L_RFQ_RG_0@--> RG["Formulir B2G: Nama Proyek, Ref DIPA, Kuantitas, Jadwal, Jenis Pengadaan"] & RB["Formulir B2B: Produk, Lingkup, Kuantitas, Jadwal, Kontak"]
-    PORT L_PORT_PD_0@--> PD["Detail Proyek /portofolio/slug"]
+    CERT --> CD["Detail Sertifikat /sertifikasi/tipe/slug\nMetadata dan Unduh"]
+    RFQ --> RG["Formulir B2G: Nama Proyek, Ref DIPA,\nKuantitas, Jadwal, Jenis Pengadaan"]
+    RFQ --> RB["Formulir B2B: Produk, Lingkup,\nKuantitas, Jadwal, Kontak"]
+    PORT --> PD["Detail Proyek /portofolio/slug"]
     ART --> ART_DETAIL
+    class H5 conversion
+    class RG conversion
+    class RB conversion
 ```
 
 ### Penjelasan Struktur Hub
@@ -105,6 +112,9 @@ config:
   layout: dagre
 ---
 flowchart TB
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
+
  subgraph SH["Beranda Spoke /"]
     direction LR
         SH1["Hero: Tagline Produk + CTA Utama"]
@@ -159,6 +169,10 @@ flowchart TB
     SC --> PDP
     SPORT --> SPORT_DETAIL
     ART --> ART_DETAIL
+    class SH4 conversion
+    class PDP5 conversion
+    class PDP6 conversion
+    class SRF conversion
 ```
 
 ### 4.2 Struktur URL Spoke (3 Level)
@@ -200,41 +214,39 @@ PDP adalah halaman konversi kunci. Setiap PDP harus memiliki:
 Dashboard adalah **surface operasional tertutup** untuk klien B2B/B2G yang telah terkualifikasi. Phase 1 hanya mencakup pelacakan status.
 
 ```mermaid
+---
+config:
+  layout: dagre
+---
 flowchart TD
-    DASH["dashboard.sentradaya.com - Portal Layanan Pelacakan"]
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
 
+    DASH["dashboard.sentradaya.com\nPortal Layanan Pelacakan"]
     DASH --> PUB["Halaman Publik: Tidak Terautentikasi"]
     DASH --> AUTH["Halaman Terautentikasi"]
-
     PUB --> LOGIN["Halaman Login /login"]
     PUB --> RESET["Lupa Kata Sandi /lupa-kata-sandi"]
     PUB --> CONFIRM["Konfirmasi Reset /konfirmasi-reset"]
-
     LOGIN --> AUTHCHECK{"Autentikasi"}
     AUTHCHECK -->|"Berhasil"| OVER["Beranda Dashboard /beranda"]
     AUTHCHECK -->|"Gagal: Throttle"| LOGIN
-
     AUTH --> OVER
     AUTH --> TRACK["Pelacakan /pelacakan"]
     AUTH --> PROF["Profil Akun /profil"]
     AUTH --> LOGOUT["Keluar /keluar"]
-
     OVER --> OV1["Ringkasan Status: Jumlah Proyek Aktif"]
     OVER --> OV2["Notifikasi: Update Terbaru"]
     OVER --> OV3["Aksi Cepat: Lihat Pelacakan"]
-
     TRACK --> TAB1["Tab: Semua"]
     TRACK --> TAB2["Tab: Proyek"]
     TRACK --> TAB3["Tab: Pesanan"]
-
     TAB1 --> DET["Detail Status /pelacakan/id"]
     TAB2 --> DET
     TAB3 --> DET
-
     DET --> DET1["Timeline Status: Riwayat Perubahan"]
     DET --> DET2["Status Terkini: Badge Status"]
     DET --> DET3["Informasi Proyek atau Pesanan"]
-
     PROF --> PRF1["Informasi Akun"]
     PROF --> PRF2["Ubah Kata Sandi"]
 ```

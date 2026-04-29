@@ -80,26 +80,32 @@ Primary references used in this repository:
 The ecosystem follows a centralized **Hub-and-Spoke** architecture delivered from a single monorepo, with shared UI tokens, shared content contracts, and shared transactional data services.
 
 ```mermaid
+---
+config:
+  layout: dagre
+---
 flowchart TD
-    U[Users] --> HUB[sentradaya.com \n Hub]
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
+
+    U[Users] --> HUB["sentradaya.com\nHub"]
     U --> PJU[pju.sentradaya.com]
     U --> SOL[solarcell.sentradaya.com]
     U --> LGT[alatpetir.sentradaya.com]
     U --> BAT[baterai.sentradaya.com]
     U --> DASH[dashboard.sentradaya.com]
-
-    HUB --> CF[Cloudflare Pages + Edge Redirects]
+    HUB --> CF["Cloudflare Pages + Edge Redirects"]
     PJU --> CF
     SOL --> CF
     LGT --> CF
     BAT --> CF
     DASH --> CF
-
-    CF --> APP[Next.js 14 App Router Monorepo]
-    APP --> CMS[Sanity CMS]
-    APP --> DB[PlanetScale]
-    APP --> AUTH[NextAuth.js]
-    APP --> OBS[GA4 + GSC + Cloudflare Analytics]
+    CF --> APP["Next.js 14 App Router Monorepo"]
+    APP --> CMS["Sanity CMS"]
+    APP --> DB[("PlanetScale")]
+    APP --> AUTH["NextAuth.js"]
+    APP --> OBS["GA4 + GSC + Cloudflare Analytics"]
+    class U entry
 ```
 
 ## Tech Stack

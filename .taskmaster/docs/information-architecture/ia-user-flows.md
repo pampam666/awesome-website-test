@@ -15,46 +15,49 @@
 **Entry Point Utama:** Hub (sentradaya.com) via pencarian langsung atau referensi LKPP.
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart TD
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
+
     START(["Pejabat Pengadaan Pemerintah"])
     START --> ENTRY["Masuk: sentradaya.com Beranda Hub"]
     ENTRY --> INTENT{"Tujuan Utama?"}
-
     INTENT -->|"Validasi Legalitas"| CERT["Pusat Sertifikasi /sertifikasi"]
     INTENT -->|"Lihat Referensi Proyek"| PORT["Portofolio Proyek /portofolio"]
     INTENT -->|"Cari Info Produk"| SPOKE["Navigasi ke Spoke Produk"]
-
     CERT --> CTYPE["Pilih Tipe: SNI / TKDN / LKPP / ISO"]
     CTYPE --> CVIEW["Lihat Detail Sertifikat"]
-    CVIEW --> CDL["Unduh Dokumen Sertifikat - GA4: file_download"]
-
+    CVIEW --> CDL["Unduh Dokumen Sertifikat\nGA4: file_download"]
     PORT --> PFILT["Filter: Pemerintah / BUMN"]
     PFILT --> PVIEW["Lihat Detail Proyek Referensi"]
-
     SPOKE --> SCAT["Katalog Produk di Spoke"]
     SCAT --> SPDP["Detail Produk - PDP"]
     SPDP --> SCERT["Verifikasi TKDN/SNI Terkait Produk"]
-
     CDL --> READY{"Siap Mengajukan Penawaran?"}
     PVIEW --> READY
     SCERT --> READY
-
-    READY -->|"Ya"| RFQPAGE["Halaman Ajukan Penawaran /permintaan-penawaran"]
+    READY -->|"Ya"| RFQPAGE["Halaman Ajukan Penawaran\n/permintaan-penawaran"]
     READY -->|"Belum"| BROWSE["Lanjut Telusuri - Kembali ke Hub"]
     BROWSE --> INTENT
-
     RFQPAGE --> SEGMENT["Pilih Segmen: Instansi Pemerintah"]
     SEGMENT --> B2GFORM["Isi Formulir B2G"]
     B2GFORM --> SUBMIT{"Kirim Formulir"}
-
-    SUBMIT -->|"Berhasil"| CONFIRM["Konfirmasi: Email ACK + Telegram Alert ke Sales"]
+    SUBMIT -->|"Berhasil"| CONFIRM["Konfirmasi: Email ACK\n+ Telegram Alert ke Sales"]
     SUBMIT -->|"Gagal"| FALLBACK["Fallback: WhatsApp Pre-filled"]
-
     CONFIRM --> QUALIFY{"Terkualifikasi oleh Sales?"}
-    QUALIFY -->|"Ya"| PROVISION["Akun Dashboard Dibuat di dashboard.sentradaya.com"]
+    QUALIFY -->|"Ya"| PROVISION["Akun Dashboard Dibuat\ndi dashboard.sentradaya.com"]
     QUALIFY -->|"Belum"| FOLLOWUP["Follow-up Sales Standar"]
-
     PROVISION --> TRACKING["Akses Pelacakan Status Proyek"]
+    class START entry
+    class B2GFORM conversion
+    class SUBMIT conversion
+    class CONFIRM conversion
+    class FALLBACK conversion
+    class PROVISION conversion
 ```
 
 **Langkah-langkah Kunci Alur B2G:**
@@ -80,48 +83,51 @@ flowchart TD
 **Entry Point Utama:** Spoke langsung via SEO organik, atau Hub via kampanye/direct.
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart TD
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
+
     START(["Pembeli B2B Sektor Swasta"])
     START --> ENTRY{"Titik Masuk?"}
-
     ENTRY -->|"SEO / Organik"| SPOKE["Masuk Langsung ke Spoke Produk"]
     ENTRY -->|"Direct / Kampanye"| HUB["Masuk: sentradaya.com Hub"]
-
     HUB --> HUBCTA["Pilih Produk via Mega Menu atau Grid"]
     HUBCTA --> SPOKE
-
     SPOKE --> SPHOME["Beranda Spoke: Produk Unggulan"]
     SPHOME --> CATALOG["Katalog Produk /katalog"]
     CATALOG --> LINE["Pilih Lini Produk"]
     LINE --> SUBCAT["Pilih Sub-kategori"]
     SUBCAT --> PDP["Detail Produk - PDP"]
-
     PDP --> ACTION{"Aksi Konversi?"}
-
-    ACTION -->|"Ajukan Penawaran"| RFQPAGE["Halaman RFQ /permintaan-penawaran dengan param produk=slug"]
-    ACTION -->|"Kontak Cepat"| WHATSAPP["WhatsApp Click-to-Chat - GA4: whatsapp_click"]
-    ACTION -->|"Unduh Dokumen"| DOWNLOAD["Unduh Datasheet PDF - GA4: file_download"]
-    ACTION -->|"Baca Konten"| ARTIKEL["Artikel Spoke /artikel - GA4: article_view"]
-
-    ARTIKEL --> ARTDET["Detail Artikel - Konten Edukasi & Produk Terkait"]
-    ARTDET --> REENGAGE2["Re-engagement CTA: Ajukan Penawaran atau WhatsApp"]
+    ACTION -->|"Ajukan Penawaran"| RFQPAGE["Halaman RFQ /permintaan-penawaran\ndengan param produk=slug"]
+    ACTION -->|"Kontak Cepat"| WHATSAPP["WhatsApp Click-to-Chat\nGA4: whatsapp_click"]
+    ACTION -->|"Unduh Dokumen"| DOWNLOAD["Unduh Datasheet PDF\nGA4: file_download"]
+    ACTION -->|"Baca Konten"| ARTIKEL["Artikel Spoke /artikel\nGA4: article_view"]
+    ARTIKEL --> ARTDET["Detail Artikel\nKonten Edukasi & Produk Terkait"]
+    ARTDET --> REENGAGE2["Re-engagement CTA:\nAjukan Penawaran atau WhatsApp"]
     REENGAGE2 --> RFQPAGE
-
-    DOWNLOAD --> REENGAGE["Re-engagement CTA: Ajukan Penawaran atau WhatsApp"]
+    DOWNLOAD --> REENGAGE["Re-engagement CTA:\nAjukan Penawaran atau WhatsApp"]
     REENGAGE --> RFQPAGE
-
     RFQPAGE --> SEGMENT["Pilih Segmen: Perusahaan Swasta"]
     SEGMENT --> B2BFORM["Isi Formulir B2B: Produk pre-filled"]
     B2BFORM --> SUBMIT{"Kirim Formulir"}
-
     SUBMIT -->|"Berhasil"| CONFIRM["Konfirmasi: Email ACK + Telegram Alert"]
     SUBMIT -->|"Gagal"| FALLBACK["Fallback: WhatsApp Pre-filled"]
-
     CONFIRM --> QUALIFY{"Terkualifikasi?"}
     QUALIFY -->|"Ya"| PROVISION["Akun Dashboard Dibuat"]
     QUALIFY -->|"Belum"| FOLLOWUP["Follow-up Sales Standar"]
-
     PROVISION --> TRACKING["Akses Pelacakan Status Pesanan"]
+    class START entry
+    class WHATSAPP conversion
+    class B2BFORM conversion
+    class SUBMIT conversion
+    class CONFIRM conversion
+    class FALLBACK conversion
+    class PROVISION conversion
 ```
 
 **Langkah-langkah Kunci Alur B2B:**
@@ -160,22 +166,32 @@ flowchart TD
 Berlaku identik untuk B2G dan B2B ketika submission API gagal:
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart TD
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
+
     SUBMIT["Pengguna Klik Kirim"]
     SUBMIT --> API{"API /api/rfq"}
-
     API -->|"200 OK"| SUCCESS["Konfirmasi + Email ACK + Telegram"]
-    API -->|"422 Validation"| INLINE["Pesan Error Inline - Data Tidak Hilang"]
+    API -->|"422 Validation"| INLINE["Pesan Error Inline\nData Tidak Hilang"]
     API -->|"500 / Timeout"| FAIL["Fallback UI Aktif"]
-
     INLINE --> SUBMIT
     FAIL --> SERIALIZE["Data Formulir Di-serialize ke URL Params"]
     SERIALIZE --> WABUILD["Bangun URL wa.me Pre-filled"]
     WABUILD --> WAUI["Tampilkan CTA WhatsApp Full-Width"]
-    WAUI --> WACLICK["Pengguna Tap WhatsApp - GA4: whatsapp_click fallback"]
-
-    FAIL --> TGALERT["Telegram Alert: Submission Gagal ke Tim Sales"]
-    FAIL --> GA4FAIL["GA4: rfq_submit_failure dengan fallback_triggered=true"]
+    WAUI --> WACLICK["Pengguna Tap WhatsApp\nGA4: whatsapp_click fallback"]
+    FAIL --> TGALERT["Telegram Alert:\nSubmission Gagal ke Tim Sales"]
+    FAIL --> GA4FAIL["GA4: rfq_submit_failure\ndengan fallback_triggered=true"]
+    class SUBMIT conversion
+    class SUCCESS conversion
+    class FAIL conversion
+    class WAUI conversion
+    class WACLICK conversion
+    class TGALERT conversion
 ```
 
 ---

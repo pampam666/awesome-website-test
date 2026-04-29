@@ -77,33 +77,36 @@ All spokes share a single codebase, a shared design system (Tailwind CSS + Radix
 **Locked Stack:** Next.js 14+ (App Router) · Turborepo · Sanity.io · Tailwind CSS + Radix UI · PlanetScale · NextAuth.js · Cloudflare Pages · Resend + Telegram Bot · GA4 + GSC + Cloudflare Analytics.
 
 ```mermaid
-graph TD
-    Root["🏢 sentradaya.com (Hub)\nCorporate Trust Center\nCertifications · Portfolio · Routing"]
+---
+config:
+  layout: dagre
+  theme: neutral
+---
+flowchart TD
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
 
+    Root["🏢 sentradaya.com (Hub)\nCorporate Trust Center\nCertifications · Portfolio · Routing"]
     Root -->|"Sub-domain routing"| S1["🌐 pju.sentradaya.com\nPJU / Street Lighting\nSpoke"]
     Root -->|"Sub-domain routing"| S2["🌐 solarcell.sentradaya.com\nSolar Cell\nSpoke"]
     Root -->|"Sub-domain routing"| S3["🌐 alatpetir.sentradaya.com\nLightning Protection\nSpoke"]
     Root -->|"Sub-domain routing"| SN["🌐 baterai.sentradaya.com\nAdditional Spokes\n(extensible)"]
-
     subgraph Monorepo ["📦 Single Turborepo Monorepo"]
         direction TB
         NextJS["Next.js 14+ App Router\n(shared codebase)"]
         DesignSystem["Tailwind CSS + Radix UI\n(shared design system)"]
         SanityFed["Sanity.io CMS\n(content federation)"]
     end
-
     subgraph DataLayer ["🗄️ Data & Integrations Layer"]
         direction TB
-        PS["PlanetScale\n(Transactional DB\nLeads · RFQ · Users)"]
+        PS[("PlanetScale\nTransactional DB\nLeads · RFQ · Users")]
         Auth["NextAuth.js\n(Admin Auth)"]
         Notif["Resend + Telegram Bot\n(Notifications)"]
         GA["GA4 + GSC + Cloudflare Analytics\n(Unified Telemetry)"]
     end
-
     subgraph EdgeLayer ["⚡ Delivery Layer"]
         CF["Cloudflare Pages\n(Edge Hosting · CDN · Redirect Engine)"]
     end
-
     S1 & S2 & S3 & SN --> NextJS
     NextJS --> DesignSystem
     NextJS --> SanityFed
@@ -112,10 +115,12 @@ graph TD
     PS --> Notif
     NextJS --> GA
     NextJS --> CF
-
     Legacy1["pjusolarcellindonesia.com\n(legacy)"] -.->|"301 Redirect"| CF
     Legacy2["sentradaya.com\n(legacy)"] -.->|"301 Redirect"| CF
     Legacy3["alatpenangkalpetir.co.id\n(legacy)"] -.->|"301 Redirect"| CF
+    class Legacy1 entry
+    class Legacy2 entry
+    class Legacy3 entry
 ```
 
 ---
@@ -146,7 +151,15 @@ Two primary user journeys govern the conversion architecture: the **B2G Governme
 The government buyer arrives with a compliance-first mindset. They must verify legal and regulatory credentials before any contact is initiated. The platform must meet them at this intent: surfacing certifications, portfolio references, and a government-labeled RFQ form without requiring them to navigate away from a structured, trustworthy context.
 
 ```mermaid
+---
+config:
+  layout: elk
+  theme: neutral
+---
 flowchart TD
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
+
     A(["👤 Government Procurement Officer\n(PPK / Pengadaan / BUMN)"])
     A --> B["Landing: Hub Root Domain sentradaya.com"]
     B --> C{"Intent Detection:\nNavigation Choice"}
@@ -163,12 +176,12 @@ flowchart TD
     M -->|"Success"| N["✅ Confirmation Page\n+ Resend Email ACK\n+ Telegram Alert → Sales"]
     M -->|"API / DB Failure"| O["⚠️ Fallback Handler\nPre-filled WhatsApp URL\nwith captured form data"]
     O --> P["📱 WhatsApp Handoff\nLead not lost"]
-
-    style A fill:#1e3a5f,color:#fff
-    style K fill:#2563eb,color:#fff
-    style N fill:#15803d,color:#fff
-    style O fill:#b45309,color:#fff
-    style P fill:#15803d,color:#fff
+    class A entry
+    class K conversion
+    class M conversion
+    class N conversion
+    class O conversion
+    class P conversion
 ```
 
 #### B2B — Private Technical Buyer Flow
@@ -176,7 +189,15 @@ flowchart TD
 The private sector buyer arrives with a product-research or spec-validation intent. They move through spoke product pages, consume technical documentation, and expect a fast path to inquiry initiation. WhatsApp remains available throughout as a parallel channel but should not be the only structured option.
 
 ```mermaid
+---
+config:
+  layout: elk
+  theme: neutral
+---
 flowchart TD
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
+
     A(["👤 B2B Private Buyer\n(Procurement Mgr / EPC Engineer / Facility Mgr)"])
     A --> B{"Entry Point"}
     B -->|"Direct / Campaign"| C["Hub: sentradaya.com\nCompany Overview + Spoke CTAs"]
@@ -195,12 +216,13 @@ flowchart TD
     N --> O["📱 WhatsApp Handoff\nLead not lost"]
     K --> P["Re-engagement CTA\n(RFQ or WhatsApp)"]
     P --> I
-
-    style A fill:#1e3a5f,color:#fff
-    style I fill:#2563eb,color:#fff
-    style M fill:#15803d,color:#fff
-    style N fill:#b45309,color:#fff
-    style O fill:#15803d,color:#fff
+    class A entry
+    class I conversion
+    class J conversion
+    class L conversion
+    class M conversion
+    class N conversion
+    class O conversion
 ```
 
 ---
@@ -369,6 +391,10 @@ New RFQ submissions and lead captures must trigger two parallel notification cha
 The RFQ submission path must be resilient to API and database failures. No lead may be silently lost due to a technical failure. The graceful fallback system ensures that when the primary submission pipeline fails, the user is transparently transitioned to a pre-filled WhatsApp URL that carries the form data they have already entered.
 
 ```mermaid
+---
+config:
+  theme: neutral
+---
 sequenceDiagram
     actor User
     participant Form as RFQ Form (Client)
@@ -377,13 +403,11 @@ sequenceDiagram
     participant Notif as Notification Service (Resend + Telegram)
     participant WA as WhatsApp API (wa.me pre-fill)
     participant GA as GA4 Analytics
-
     User->>Form: Fills out RFQ fields (B2G or B2B)
     Form->>GA: Event: rfq_start
     User->>Form: Clicks Submit
     Form->>GA: Event: rfq_submit_attempt
     Form->>API: POST /api/rfq {formData, segment, source}
-
     alt Happy Path — API & DB Available
         API->>API: Validate & sanitize input
         API->>DB: INSERT lead record

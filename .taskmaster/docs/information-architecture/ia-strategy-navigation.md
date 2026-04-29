@@ -40,9 +40,16 @@ Arsitektur Informasi ini dibangun di atas model **Hub-and-Spoke** yang melayani 
 ### 2.1 Header — Hub (sentradaya.com)
 
 ```mermaid
-flowchart TB
+---
+config:
+  layout: dagre
+  theme: neutral
+---
+flowchart LR
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
+
  subgraph HEADER_HUB["Header Navigasi: sentradaya.com (Hub)"]
-    direction LR
         H_LOGO["[Logo] DBSN"]
         H_NAV1["Beranda"]
         H_NAV2["Tentang Kami ▼"]
@@ -52,11 +59,8 @@ flowchart TB
         H_NAV6["Hubungi Kami"]
         H_CTA["[Tombol] Ajukan Penawaran"]
  end
-
-    %% Mengunci urutan layout dari kiri ke kanan
     H_LOGO --- H_NAV1 --- H_NAV2 --- H_NAV3 --- H_NAV4 --- H_NAV5 --- H_NAV6 --- H_CTA
-
-    style H_CTA fill:#007
+    class H_CTA conversion
 ```
 
 | Item Navigasi | Tipe | Perilaku |
@@ -79,10 +83,13 @@ flowchart TB
 ---
 config:
   layout: dagre
+  theme: neutral
 ---
-flowchart TB
+flowchart LR
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
+
  subgraph HEADER_SPOKE["Header Navigasi: pju.sentradaya.com (Spoke)"]
-    direction LR
         S_LOGO["[Logo DBSN] PJU - Penerangan Jalan Umum"]
         S_BACK["⬅ sentradaya.com"]
         S_NAV1["Beranda"]
@@ -91,11 +98,8 @@ flowchart TB
         S_NAV4["Artikel"]
         S_CTA["[Tombol] Ajukan Penawaran"]
  end
-
-    %% Mengunci urutan layout dari kiri ke kanan
     S_LOGO --- S_BACK --- S_NAV1 --- S_NAV2 --- S_NAV3 --- S_NAV4 --- S_CTA
-    
-    style S_CTA fill:#007
+    class S_CTA conversion
 ```
 
 | Item Navigasi | Tipe | Perilaku |
@@ -117,24 +121,21 @@ flowchart TB
 ---
 config:
   layout: dagre
+  theme: neutral
 ---
-flowchart TB
+flowchart LR
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
+
  subgraph HEADER_DASHBOARD["Header Navigasi: dashboard.sentradaya.com (Bagian 2.3)"]
-    direction LR
         DH_LOGO["[Logo DBSN] Layanan Pelacakan"]
         DH_NAV1["Beranda"]
         DH_NAV2["Pelacakan"]
         DH_NAV3["Profil Akun"]
-        DH_SPACE["           "] %% Spacer untuk memisahkan menu kiri dan kanan
         DH_USER["[Nama User]"]
         DH_LOGOUT["[Aksi] Keluar"]
  end
-
-    %% Mengunci urutan layout dari kiri ke kanan
-    DH_LOGO --- DH_NAV1 --- DH_NAV2 --- DH_NAV3 --- DH_SPACE --- DH_USER --- DH_LOGOUT
-    
-    style DH_USER fill:#007
-    style DH_LOGOUT fill:#dc3545
+    DH_LOGO --- DH_NAV1 --- DH_NAV2 --- DH_NAV3 --- DH_USER --- DH_LOGOUT
 ```
 
 | Item Navigasi | Tipe | Perilaku |

@@ -18,9 +18,15 @@
 ### High-Level System Topology (Hub-and-Spoke)
 
 ```mermaid
+---
+config:
+  layout: dagre
+---
 flowchart TD
-    U["Users\nB2G Procurement / B2B Technical Buyers / Internal Admin"]
+    classDef entry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef conversion fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412
 
+    U["Users\nB2G Procurement / B2B Technical Buyers / Internal Admin"]
     subgraph DNS["Public Domains"]
         HUB["sentradaya.com\nHub (Corporate Trust Center)"]
         PJU["pju.sentradaya.com\nProduct Spoke"]
@@ -29,53 +35,45 @@ flowchart TD
         BAT["baterai.sentradaya.com\nProduct Spoke (Extensible)"]
         DASH["dashboard.sentradaya.com\nSecure Tracking Portal"]
     end
-
     subgraph EDGE["Cloudflare Edge"]
         CF["Cloudflare Pages\nCDN + TLS + Hosting"]
         REDIR["Redirect Resolver\n(redirect_map-driven 301)"]
     end
-
     subgraph APP["Next.js 14 Monorepo (Turborepo)"]
         WEB["Hub + Spokes Web App\n(App Router)"]
         API["Route Handlers\n/api/rfq, /api/tracking, /api/admin/*"]
         AUTH["NextAuth.js\nSession + RBAC"]
         UI["Shared UI Package\nTailwind + Radix"]
     end
-
     subgraph DATA["Data & Integrations"]
         SANITY["Sanity CMS\nProduct/Certification/Portfolio/Page/SpokeConfig"]
-        PS["PlanetScale\nleads, users, redirect_map"]
+        PS[("PlanetScale\nleads, users, redirect_map")]
         RESEND["Resend Email API"]
         TG["Telegram Bot API"]
         GA["GA4 + GSC + Cloudflare Analytics"]
         WA["WhatsApp wa.me Fallback"]
     end
-
     subgraph LEGACY["Legacy Domains"]
         L1["pjusolarcellindonesia.com"]
         L2["sentradaya.com (legacy)"]
         L3["alatpenangkalpetir.co.id"]
     end
-
     U --> HUB
     U --> PJU
     U --> SOL
     U --> LGT
     U --> BAT
     U --> DASH
-
     HUB --> CF
     PJU --> CF
     SOL --> CF
     LGT --> CF
     BAT --> CF
     DASH --> CF
-
-    L1 --> REDIR
-    L2 --> REDIR
-    L3 --> REDIR
+    L1 -.-> REDIR
+    L2 -.-> REDIR
+    L3 -.-> REDIR
     REDIR --> CF
-
     CF --> WEB
     WEB --> UI
     WEB --> SANITY
@@ -87,6 +85,11 @@ flowchart TD
     AUTH --> PS
     WEB --> GA
     API --> WA
+    class U entry
+    class L1 entry
+    class L2 entry
+    class L3 entry
+    class WA conversion
 ```
 
 ## 2. Component Breakdown
@@ -144,8 +147,10 @@ flowchart TD
 
 ```mermaid
 erDiagram
-    SPOKE_CONFIG ||--|{ USERS : connected_lead_id
-
+    SPOKE_CONFIG ||--o{ PRODUCT : "contains"
+    SPOKE_CONFIG ||--o{ PORTFOLIO_ENTRY : "references"
+    PRODUCT }o--o{ CERTIFICATION : "related to"
+    LEADS ||--o| USERS : "linked to"
     SPOKE_CONFIG {
       string id PK
       string name
@@ -156,7 +161,6 @@ erDiagram
       json featuredProducts
       json seoDefaults
     }
-
     PRODUCT {
       string id PK
       string title
@@ -170,7 +174,6 @@ erDiagram
       json relatedCertifications
       json seoMeta
     }
-
     CERTIFICATION {
       string id PK
       string title
@@ -184,7 +187,6 @@ erDiagram
       boolean isIndexable
       json seoMeta
     }
-
     PORTFOLIO_ENTRY {
       string id PK
       string title
@@ -199,7 +201,6 @@ erDiagram
       string relatedSpoke FK
       json relatedProducts
     }
-
     PAGE {
       string id PK
       string title
@@ -208,7 +209,6 @@ erDiagram
       json sections
       json seoMeta
     }
-
     LEADS {
       string id PK
       datetime created_at
@@ -237,21 +237,19 @@ erDiagram
       datetime dashboard_access_granted_at
       enum dashboard_access_status
     }
-
     USERS {
       string id PK
       string email
       string name
       enum role
       datetime created_at
-      string linked_lead_id
+      string linked_lead_id FK
       string client_company_name
       enum tracking_scope_type
       json tracking_scope_ids
       datetime last_login_at
       boolean is_active
     }
-
     REDIRECT_MAP {
       string legacy_url PK
       string target_url
@@ -426,13 +424,11 @@ sequenceDiagram
     participant TG as Telegram Bot API
     participant WA as WhatsApp wa.me
     participant GA as GA4
-
     User->>UI: Fill RFQ fields (B2G/B2B)
     UI->>GA: rfq_start
     User->>UI: Submit form
     UI->>GA: rfq_submit_attempt
     UI->>API: JSON payload + attribution + UTM
-
     alt Valid + DB available
         API->>API: Validate, sanitize, anti-spam checks
         API->>DB: INSERT leads row
@@ -466,11 +462,9 @@ sequenceDiagram
     participant DB as PlanetScale (users, leads)
     participant TrackAPI as GET /api/dashboard/tracking
     participant GA as GA4
-
     Client->>Dash: Open login page
     Client->>Auth: Submit credentials
     Auth->>DB: Lookup user by email
-
     alt Active client account + valid credentials
         DB-->>Auth: user(role=client, linked_lead_id, tracking_scope_ids, is_active=true)
         Auth->>DB: Update last_login_at
