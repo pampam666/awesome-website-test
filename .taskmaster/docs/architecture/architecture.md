@@ -144,14 +144,7 @@ flowchart TD
 
 ```mermaid
 erDiagram
-    SPOKE_CONFIG ||--o{ PRODUCT : "featuredProducts"
-    SPOKE_CONFIG ||--o{ PAGE : "targetSpoke"
-    SPOKE_CONFIG ||--o{ PORTFOLIO_ENTRY : "relatedSpoke"
-
-    PRODUCT }o--o{ CERTIFICATION : "relatedCertifications"
-    PORTFOLIO_ENTRY }o--o{ PRODUCT : "relatedProducts"
-
-    LEADS ||--o| USERS : "linked_lead_id"
+    SPOKE_CONFIG ||--|{ USERS : connected_lead_id
 
     SPOKE_CONFIG {
       string id PK
@@ -211,7 +204,7 @@ erDiagram
       string id PK
       string title
       string slug
-      string targetSpoke FK_nullable
+      string targetSpoke
       json sections
       json seoMeta
     }
@@ -235,13 +228,13 @@ erDiagram
       int quantity
       text project_scope
       string timeline
-      string procurement_type_nullable
+      string procurement_type
       text notes
       enum submission_status
       boolean fallback_triggered
-      text fallback_wa_url_nullable
-      string tracking_project_id_nullable
-      datetime dashboard_access_granted_at_nullable
+      text fallback_wa_url
+      string tracking_project_id
+      datetime dashboard_access_granted_at
       enum dashboard_access_status
     }
 
@@ -251,11 +244,11 @@ erDiagram
       string name
       enum role
       datetime created_at
-      string linked_lead_id FK_nullable
-      string client_company_name_nullable
-      enum tracking_scope_type_nullable
-      json tracking_scope_ids_nullable
-      datetime last_login_at_nullable
+      string linked_lead_id
+      string client_company_name
+      enum tracking_scope_type
+      json tracking_scope_ids
+      datetime last_login_at
       boolean is_active
     }
 

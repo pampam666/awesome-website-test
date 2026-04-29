@@ -70,7 +70,7 @@ flowchart TB
         AD2["Konten Artikel"]
         AD3["Artikel Terkait"]
   end
-    HUB["HUB sentradaya.com"] --> HOME & ABOUT & CERT & PORT & PROD & RFQ & CONTACT & ART
+    HUB["HUB sentradaya.com"] --> HOME & ABOUT & CERT & PORT & RFQ & PROD & CONTACT & ART
     CERT L_CERT_CD_0@--> CD["Detail Sertifikat /sertifikasi/tipe/slug - Metadata dan Unduh"]
     RFQ L_RFQ_RG_0@--> RG["Formulir B2G: Nama Proyek, Ref DIPA, Kuantitas, Jadwal, Jenis Pengadaan"] & RB["Formulir B2B: Produk, Lingkup, Kuantitas, Jadwal, Kontak"]
     PORT L_PORT_PD_0@--> PD["Detail Proyek /portofolio/slug"]
